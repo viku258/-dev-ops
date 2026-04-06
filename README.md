@@ -1,93 +1,246 @@
-# project integration
+# simple-react-full-stack
 
+[![Build Status](https://travis-ci.org/crsandeep/simple-react-full-stack.svg?branch=master)](https://travis-ci.org/crsandeep/simple-react-full-stack)
 
+This is a boilerplate to build a full stack web application using React, Node.js, Express and Webpack. It is also configured with webpack-dev-server, eslint, prettier and babel.
 
-## Getting started
+- [simple-react-full-stack](#simple-react-full-stack)
+  - [Introduction](#introduction)
+    - [Development mode](#development-mode)
+    - [Production mode](#production-mode)
+  - [Quick Start](#quick-start)
+  - [Documentation](#documentation)
+    - [Folder Structure](#folder-structure)
+    - [Babel](#babel)
+    - [ESLint](#eslint)
+    - [Webpack](#webpack)
+    - [Webpack dev server](#webpack-dev-server)
+    - [Nodemon](#nodemon)
+    - [Express](#express)
+    - [Concurrently](#concurrently)
+    - [VSCode + ESLint + Prettier](#vscode--eslint--prettier)
+      - [Installation guide](#installation-guide)
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Introduction
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+[Create React App](https://github.com/facebook/create-react-app) is a quick way to get started with React development and it requires no build configuration. But it completely hides the build config which makes it difficult to extend. It also requires some additional work to integrate it with an existing Node.js/Express backend application.
 
-## Add your files
+This is a simple full stack [React](https://reactjs.org/) application with a [Node.js](https://nodejs.org/en/) and [Express](https://expressjs.com/) backend. Client side code is written in React and the backend API is written using Express. This application is configured with [Airbnb's ESLint rules](https://github.com/airbnb/javascript) and formatted through [prettier](https://prettier.io/).
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+### Development mode
 
+In the development mode, we will have 2 servers running. The front end code will be served by the [webpack dev server](https://webpack.js.org/configuration/dev-server/) which helps with hot and live reloading. The server side Express code will be served by a node server using [nodemon](https://nodemon.io/) which helps in automatically restarting the server whenever server side code changes.
+
+### Production mode
+
+In the production mode, we will have only 1 server running. All the client side code will be bundled into static files using webpack and it will be served by the Node.js/Express application.
+
+## Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/crsandeep/simple-react-full-stack
+
+# Go inside the directory
+cd simple-react-full-stack
+
+# Install dependencies
+yarn (or npm install)
+
+# Start development server
+yarn dev (or npm run dev)
+
+# Build for production
+yarn build (or npm run build)
+
+# Start production server
+yarn start (or npm start)
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/bejaouitaha3/project-integration.git
-git branch -M main
-git push -uf origin main
+
+## Documentation
+
+### Folder Structure
+
+All the source code will be inside **src** directory. Inside src, there is client and server directory. All the frontend code (react, css, js and any other assets) will be in client directory. Backend Node.js/Express code will be in the server directory.
+
+### Babel
+
+[Babel](https://babeljs.io/) helps us to write code in the latest version of JavaScript. If an environment does not support certain features natively, Babel will help us to compile those features down to a supported version. It also helps us to convert JSX to Javascript.
+
+[.babelrc file](https://babeljs.io/docs/usage/babelrc/) is used describe the configurations required for Babel. Below is the .babelrc file which I am using.
+
+```javascript
+{
+    "presets": ["env", "react"]
+}
 ```
 
-## Integrate with your tools
+Babel requires plugins to do the transformation. Presets are the set of plugins defined by Babel. Preset **env** allows to use babel-preset-es2015, babel-preset-es2016, and babel-preset-es2017 and it will transform them to ES5. Preset **react** allows us to use JSX syntax and it will transform JSX to Javascript.
 
-* [Set up project integrations](https://gitlab.com/bejaouitaha3/project-integration/-/settings/integrations)
+### ESLint
 
-## Collaborate with your team
+[ESLint](https://eslint.org/) is a pluggable and configurable linter tool for identifying and reporting on patterns in JavaScript.
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+[.eslintrc.json file](<(https://eslint.org/docs/user-guide/configuring)>) (alternatively configurations can we written in Javascript or YAML as well) is used describe the configurations required for ESLint. Below is the .eslintrc.json file which I am using.
 
-## Test and Deploy
+```javascript
+{
+  "extends": ["airbnb"],
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "rules": {
+    "no-console": "off",
+    "comma-dangle": "off",
+    "react/jsx-filename-extension": "off"
+  }
+}
+```
 
-Use the built-in continuous integration in GitLab.
+[I am using Airbnb's Javascript Style Guide](https://github.com/airbnb/javascript) which is used by many JavaScript developers worldwide. Since we are going to write both client (browser) and server side (Node.js) code, I am setting the **env** to browser and node. Optionally, we can override the Airbnb's configurations to suit our needs. I have turned off [**no-console**](https://eslint.org/docs/rules/no-console), [**comma-dangle**](https://eslint.org/docs/rules/comma-dangle) and [**react/jsx-filename-extension**](https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-filename-extension.md) rules.
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+### Webpack
 
-***
+[Webpack](https://webpack.js.org/) is a module bundler. Its main purpose is to bundle JavaScript files for usage in a browser.
 
-# Editing this README
+[webpack.config.js](https://webpack.js.org/configuration/) file is used to describe the configurations required for webpack. Below is the webpack.config.js file which I am using.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+```javascript
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CleanWebpackPlugin = require("clean-webpack-plugin");
 
-## Suggestions for a good README
+const outputDirectory = "dist";
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+module.exports = {
+  entry: ["babel-polyfill", "./src/client/index.js"],
+  output: {
+    path: path.join(__dirname, outputDirectory),
+    filename: "bundle.js"
+  },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader"
+        }
+      },
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"]
+      },
+      {
+        test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+        loader: "url-loader?limit=100000"
+      }
+    ]
+  },
+  devServer: {
+    port: 3000,
+    open: true,
+    proxy: {
+      "/api": "http://localhost:8080"
+    }
+  },
+  plugins: [
+    new CleanWebpackPlugin([outputDirectory]),
+    new HtmlWebpackPlugin({
+      template: "./public/index.html",
+      favicon: "./public/favicon.ico"
+    })
+  ]
+};
+```
 
-## Name
-Choose a self-explaining name for your project.
+1.  **entry:** entry: ./src/client/index.js is where the application starts executing and webpack starts bundling.
+    Note: babel-polyfill is added to support async/await. Read more [here](https://babeljs.io/docs/en/babel-polyfill#usage-in-node-browserify-webpack).
+2.  **output path and filename:** the target directory and the filename for the bundled output
+3.  **module loaders:** Module loaders are transformations that are applied on the source code of a module. We pass all the js file through [babel-loader](https://github.com/babel/babel-loader) to transform JSX to Javascript. CSS files are passed through [css-loaders](https://github.com/webpack-contrib/css-loader) and [style-loaders](https://github.com/webpack-contrib/style-loader) to load and bundle CSS files. Fonts and images are loaded through url-loader.
+4.  **Dev Server:** Configurations for the webpack-dev-server which will be described in coming section.
+5.  **plugins:** [clean-webpack-plugin](https://github.com/johnagan/clean-webpack-plugin) is a webpack plugin to remove the build folder(s) before building. [html-webpack-plugin](https://github.com/jantimon/html-webpack-plugin) simplifies creation of HTML files to serve your webpack bundles. It loads the template (public/index.html) and injects the output bundle.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+### Webpack dev server
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+[Webpack dev server](https://webpack.js.org/configuration/dev-server/) is used along with webpack. It provides a development server that provides live reloading for the client side code. This should be used for development only.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+The devServer section of webpack.config.js contains the configuration required to run webpack-dev-server which is given below.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+```javascript
+devServer: {
+    port: 3000,
+    open: true,
+    proxy: {
+        "/api": "http://localhost:8080"
+    }
+}
+```
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+[**Port**](https://webpack.js.org/configuration/dev-server/#devserver-port) specifies the Webpack dev server to listen on this particular port (3000 in this case). When [**open**](https://webpack.js.org/configuration/dev-server/#devserver-open) is set to true, it will automatically open the home page on startup. [Proxying](https://webpack.js.org/configuration/dev-server/#devserver-proxy) URLs can be useful when we have a separate API backend development server and we want to send API requests on the same domain. In our case, we have a Node.js/Express backend where we want to send the API requests to.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+### Nodemon
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+Nodemon is a utility that will monitor for any changes in the server source code and it automatically restart the server. This is used in development only.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+nodemon.json file is used to describe the configurations for Nodemon. Below is the nodemon.json file which I am using.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+```javascript
+{
+  "watch": ["src/server/"]
+}
+```
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+Here, we tell nodemon to watch the files in the directory src/server where out server side code resides. Nodemon will restart the node server whenever a file under src/server directory is modified.
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+### Express
 
-## License
-For open source projects, say how it is licensed.
+Express is a web application framework for Node.js. It is used to build our backend API's.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+src/server/index.js is the entry point to the server application. Below is the src/server/index.js file
+
+```javascript
+const express = require("express");
+const os = require("os");
+
+const app = express();
+
+app.use(express.static("dist"));
+app.get("/api/getUsername", (req, res) =>
+  res.send({ username: os.userInfo().username })
+);
+app.listen(8080, () => console.log("Listening on port 8080!"));
+```
+
+This starts a server and listens on port 8080 for connections. The app responds with `{username: <username>}` for requests to the URL (/api/getUsername). It is also configured to serve the static files from **dist** directory.
+
+### Concurrently
+
+[Concurrently](https://github.com/kimmobrunfeldt/concurrently) is used to run multiple commands concurrently. I am using it to run the webpack dev server and the backend node server concurrently in the development environment. Below are the npm/yarn script commands used.
+
+```javascript
+"client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
+"server": "nodemon src/server/index.js",
+"dev": "concurrently \"npm run server\" \"npm run client\""
+```
+
+### VSCode + ESLint + Prettier
+
+[VSCode](https://code.visualstudio.com/) is a lightweight but powerful source code editor. [ESLint](https://eslint.org/) takes care of the code-quality. [Prettier](https://prettier.io/) takes care of all the formatting.
+
+#### Installation guide
+
+1.  Install [VSCode](https://code.visualstudio.com/)
+2.  Install [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+3.  Install [Prettier extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+4.  Modify the VSCode user settings to add below configuration
+
+    ```javascript
+    "eslint.alwaysShowStatus": true,
+    "eslint.autoFixOnSave": true,
+    "editor.formatOnSave": true,
+    "prettier.eslintIntegration": true
+    ```
+
+Above, we have modified editor configurations. Alternatively, this can be configured at the project level by following [this article](https://medium.com/@netczuk/your-last-eslint-config-9e35bace2f99).
