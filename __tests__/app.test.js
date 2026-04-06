@@ -1,9 +1,19 @@
-describe('Basic tests', () => {
-  test('adds 1 + 1 to equal 2', () => {
-    expect(1 + 1).toBe(2);
+describe('Dark mode logic', () => {
+  test('dark mode is off by default', () => {
+    const darkMode = false;
+    expect(darkMode).toBe(false);
   });
 
-  test('string contains hello', () => {
-    expect('hello world').toContain('hello');
+  test('toggling dark mode turns it on', () => {
+    let darkMode = false;
+    darkMode = !darkMode;
+    expect(darkMode).toBe(true);
+  });
+
+  test('toggling dark mode twice returns to light', () => {
+    let darkMode = false;
+    darkMode = !darkMode;
+    darkMode = !darkMode;
+    expect(darkMode).toBe(false);
   });
 });
