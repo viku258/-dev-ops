@@ -8,8 +8,13 @@ on:
     branches:
       - main
 
+env:
+  NODE_VERSION: 18
+  APP_URL: https://dev-ops-production-43f8.up.railway.app
+
 jobs:
-  devops-pipeline:
+  build:
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
@@ -19,32 +24,124 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
-
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
 
       - name: Install dependencies
         run: npm install
 
-      - name: Run tests
-        run: npm test
-
-      - name: Run code quality check
-        run: npm run lint
-        continue-on-error: true
-
       - name: Build application
         run: npm run build
 
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          name: build-artifact
-          path: dist/
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run automated tests
+        run: npm test
+
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run ESLint quality check
+        run: npm run lint
+
+  package:
+    name: Package Docker Image
+    runs-on: ubuntu-latest
+    needs: quality
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
 
       - name: Build Docker image
-        run: docker build -t devops-project .
+        run: docker build -t devops-project:${{ github.sha }} .
+
+  deploy:
+    name: Deploy Check
+    runs-on: ubuntu-latest
+    needs: package
+
+    steps:
+      - name: Wait for Railway deployment and check health endpoint
+        run: |
+          echo "Checking deployed app: $APP_URL/health"
+
+          for i in {1..60}; do
+            CODE=$(curl -L -s -o /dev/null -w "%{http_code}" "$APP_URL/health" || true)
+            echo "Attempt $i: HTTP $CODE"
+
+            if [ "$CODE" = "200" ]; then
+              echo "Deployment is online and healthy."
+              exit 0
+            fi
+
+            sleep 10
+          done
+
+          echo "Deployment health check failed."
+          exit 1
+
+  performance:
+    name: Performance Check
+    runs-on: ubuntu-latest
+    needs: deploy
+
+    steps:
+      - name: Check website response time
+        run: |
+          TIME=$(curl -L -o /dev/null -s -w "%{time_total}" "$APP_URL")
+          echo "Response time: $TIME seconds"
+
+          python3 -c "import sys; t=float('$TIME'); sys.exit(0 if t < 5 else 1)"
+
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    needs: performance
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run security audit
+        run: npm audit --omit=dev --audit-level=critical
