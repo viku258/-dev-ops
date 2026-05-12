@@ -7,7 +7,7 @@ const App = () => {
   return (
     <div className={darkMode ? 'app dark' : 'app'}>
       <h1>Hello Taha</h1>
-      <button onClick={() => setDarkMode(!darkMode)}>
+      <button type="button" onClick={() => setDarkMode(!darkMode)}>
         {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
       </button>
     </div>
